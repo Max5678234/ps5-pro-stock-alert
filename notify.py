@@ -30,7 +30,7 @@ def load_env():
 
 def _token():
     load_env()
-    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
     if not token or "paste-your" in token:
         sys.exit("TELEGRAM_BOT_TOKEN is missing. Put it in the .env file.")
     return token
@@ -50,7 +50,7 @@ def _call(method, params=None):
 
 def send_message(text):
     load_env()
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
     if not chat_id:
         sys.exit("TELEGRAM_CHAT_ID is missing. Run: python3 notify.py chatid")
     return _call("sendMessage", {
