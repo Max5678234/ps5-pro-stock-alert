@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "*/5 * * * *"   # every 5 minutes (GitHub may run it a few minutes late)
   workflow_dispatch:         # lets you press "Run workflow" by hand
+    inputs:
+      send_test:
+        description: "Also send a Telegram test message"
+        type: boolean
+        default: false
 
 permissions:
   contents: write            # needed to save state.json back to the repo
@@ -25,6 +30,13 @@ jobs:
           cache: pip
 
       - run: pip install -r requirements.txt
+
+      - name: Send Telegram test message
+        if: ${{ inputs.send_test }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python notify.py test
 
       - name: Check stock
         env:

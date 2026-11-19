@@ -1,20 +1,4 @@
 {
-  "amazon_de_cfi7021": {
-    "alertable": false,
-    "in_stock": false
-  },
-  "amazon_de_cfi7121": {
-    "alertable": false,
-    "in_stock": true
-  },
-  "amazon_uk_2025": {
-    "alertable": false,
-    "in_stock": true
-  },
-  "amazon_uk_cfi7021": {
-    "alertable": false,
-    "in_stock": true
-  },
   "psdirect_de": {
     "alertable": false,
     "in_stock": false

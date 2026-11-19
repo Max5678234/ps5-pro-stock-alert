@@ -10,12 +10,6 @@ at or under **£800 (UK)** / **€910 (DE)**.
 |---|---|
 | PlayStation Direct UK | https://direct.playstation.com/en-gb/buy-consoles/playstation5-pro-console-2-tb |
 | PlayStation Direct DE | https://direct.playstation.com/de-de/buy-consoles/playstation5-pro-console-2-tb |
-| Amazon UK (CFI-7021) | https://www.amazon.co.uk/dp/B0DJH2NS6R |
-| Amazon UK (newer listing) | https://www.amazon.co.uk/dp/B0FR94FV8J |
-| Amazon DE (CFI-7021) | https://www.amazon.de/dp/B0DHSV68YZ |
-| Amazon DE (CFI-7121) | https://www.amazon.de/dp/B0FRYBZR91 |
-
-Amazon only alerts when the seller is Amazon itself, not marketplace sellers.
 
 ## Dropped (block automated checks)
 
@@ -25,6 +19,7 @@ Amazon only alerts when the seller is Amazon itself, not marketplace sellers.
 - **MediaMarkt** and **Saturn**: CAPTCHA page
 - **Otto**: rejects script requests (HTTP 400)
 - **Game**: never responds to script requests (times out)
+- **Amazon UK** and **Amazon DE**: worked from home, but show a CAPTCHA every time from GitHub's servers
 
 ## Files
 

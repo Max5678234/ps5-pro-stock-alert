@@ -14,7 +14,6 @@ import sys
 from pathlib import Path
 
 import requests
-from bs4 import BeautifulSoup
 
 import notify
 
@@ -89,60 +88,9 @@ def check_playstation_direct(url):
     }
 
 
-# ---------------------------------------------------------------- Amazon
-
-def check_amazon(url, currency):
-    domain = "amazon.co.uk" if "amazon.co.uk" in url else "amazon.de"
-    session = requests.Session()
-    session.headers.update(HEADERS)
-    session.cookies.set("i18n-prefs", currency, domain="." + domain)  # show prices in £/€
-    r = session.get(url, timeout=30)
-    if r.status_code != 200:
-        raise CheckFailed(f"HTTP {r.status_code}")
-    if "captcha" in r.text.lower() and "productTitle" not in r.text:
-        raise CheckFailed("Amazon showed a CAPTCHA (blocked this time)")
-
-    soup = BeautifulSoup(r.text, "html.parser")
-    title_el = soup.find(id="productTitle")
-    if not title_el:
-        raise CheckFailed("product title not found")
-    title = title_el.get_text(" ", strip=True)
-    if not re.search(r"(playstation|ps)\s*®?\s*5\s*pro", title, re.I):
-        raise CheckFailed(f"unexpected product: {title[:60]}")
-
-    has_buy_button = soup.find(id="add-to-cart-button") is not None
-
-    price = None
-    price_el = soup.select_one("#corePrice_feature_div .a-offscreen")
-    if price_el:
-        price = parse_price(price_el.get_text())
-
-    seller = ""
-    seller_el = (soup.select_one("#merchantInfoFeature_feature_div .offer-display-feature-text-message")
-                 or soup.select_one("#merchantInfoFeature_feature_div .offer-display-feature-text"))
-    if seller_el:
-        seller = seller_el.get_text(" ", strip=True)
-    else:
-        old = soup.find(id="merchant-info")  # older page layout
-        if old:
-            seller = old.get_text(" ", strip=True)
-    sold_by_amazon = bool(re.match(r"^amazon\b", seller, re.I)) or bool(
-        re.search(r"(dispatched from and sold by|versand und verkauf durch)\s+amazon", seller, re.I))
-
-    in_stock = has_buy_button and price is not None
-    return {
-        "in_stock": in_stock,
-        "price": price,
-        "currency": currency,
-        "seller": seller or "unknown",
-        "sold_by_retailer": sold_by_amazon,
-        "detail": title[:60],
-    }
-
-
 # ---------------------------------------------------------------- Retailer list
 # Dropped (they block automated checks): Argos, Currys, Game, Smyths,
-# MediaMarkt, Saturn, Otto. See README.md.
+# MediaMarkt, Saturn, Otto, Amazon UK, Amazon DE. See README.md.
 
 RETAILERS = [
     {
@@ -156,30 +104,6 @@ RETAILERS = [
         "name": "PlayStation Direct DE",
         "url": "https://direct.playstation.com/de-de/buy-consoles/playstation5-pro-console-2-tb",
         "check": lambda url: check_playstation_direct(url),
-    },
-    {
-        "id": "amazon_uk_cfi7021",
-        "name": "Amazon UK",
-        "url": "https://www.amazon.co.uk/dp/B0DJH2NS6R",
-        "check": lambda url: check_amazon(url, "GBP"),
-    },
-    {
-        "id": "amazon_uk_2025",
-        "name": "Amazon UK",
-        "url": "https://www.amazon.co.uk/dp/B0FR94FV8J",
-        "check": lambda url: check_amazon(url, "GBP"),
-    },
-    {
-        "id": "amazon_de_cfi7021",
-        "name": "Amazon DE",
-        "url": "https://www.amazon.de/dp/B0DHSV68YZ",
-        "check": lambda url: check_amazon(url, "EUR"),
-    },
-    {
-        "id": "amazon_de_cfi7121",
-        "name": "Amazon DE",
-        "url": "https://www.amazon.de/dp/B0FRYBZR91",
-        "check": lambda url: check_amazon(url, "EUR"),
     },
 ]
 
